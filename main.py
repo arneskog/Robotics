@@ -2,6 +2,7 @@ from config import *
 from enviorment import *
 from joystick import *
 from carModel import *
+from sensor import *
 
 def main():
     state = INIT_STATE   
@@ -30,7 +31,9 @@ def main():
 
         points_left_lane, points_right_lane = draw_sin_lanes(screen, state[0], state[1])
 
-        points_car_corners = draw_car(screen, state)
+        draw_car(screen, state)
+
+        detect_and_draw_sensor_points(screen, state, points_left_lane, points_right_lane, steps=None, max_lateral=3.0)
         
 
         pygame.display.flip()

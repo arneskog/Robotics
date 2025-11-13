@@ -37,7 +37,6 @@ def draw_sin_lanes(screen, car_x, car_y):
     pygame.draw.lines(screen, (200, 200, 200), False, points_right_screen, 3)
 
     return points_left_world, points_right_world
-
     
 
 def draw_car(screen, state):
@@ -81,5 +80,3 @@ def draw_car(screen, state):
     wy_wheel = front_world[1] + wheel_len * math.sin(theta + phi)
     wheel_screen = world_to_screen(wx_wheel, wy_wheel, x, y)
     pygame.draw.line(screen, (255, 0, 0), front_screen, wheel_screen, 2)
-
-    return world_corners
