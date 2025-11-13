@@ -62,12 +62,15 @@ def world_to_screen(wx, wy, car_x, car_y):
     return int(sx), int(sy)
 
 def draw_sin_lanes(screen, car_x, car_y):
-    points_left = []
-    points_right = []
+    points_left_screen = []
+    points_right_screen = []
+
+    points_left_world = []
+    points_right_world = []
 
     x_min = car_x - 30
     x_max = car_x + 50
-    step = 0.5 
+    step = 0.5
 
     x = x_min
     while x <= x_max:
@@ -75,16 +78,21 @@ def draw_sin_lanes(screen, car_x, car_y):
         y_left = y_center - LANE_WIDTH / 2.0
         y_right = y_center + LANE_WIDTH / 2.0
 
+        points_left_world.append((x, y_left))
+        points_right_world.append((x, y_right))
+
         sx_left, sy_left = world_to_screen(x, y_left, car_x, car_y)
         sx_right, sy_right = world_to_screen(x, y_right, car_x, car_y)
 
-        points_left.append((sx_left, sy_left))
-        points_right.append((sx_right, sy_right))
+        points_left_screen.append((sx_left, sy_left))
+        points_right_screen.append((sx_right, sy_right))
 
         x += step
 
-    pygame.draw.lines(screen, (200, 200, 200), False, points_left, 3)
-    pygame.draw.lines(screen, (200, 200, 200), False, points_right, 3)
+    pygame.draw.lines(screen, (200, 200, 200), False, points_left_screen, 3)
+    pygame.draw.lines(screen, (200, 200, 200), False, points_right_screen, 3)
+
+    return points_left_world, points_right_world
 
     
 
@@ -130,6 +138,8 @@ def draw_car(screen, state):
     wheel_screen = world_to_screen(wx_wheel, wy_wheel, x, y)
     pygame.draw.line(screen, (255, 0, 0), front_screen, wheel_screen, 2)
 
+    return world_corners
+
 
 #Task 4, plot detection of the lane's left and right white lines
 
@@ -162,9 +172,9 @@ def main():
 
         screen.fill((30, 30, 30))
 
-        draw_sin_lanes(screen, state[0], state[1])
+        points_left_world, points_right_world = draw_sin_lanes(screen, state[0], state[1])
 
-        draw_car(screen, state)
+        world_corners = draw_car(screen, state)
         
 
         pygame.display.flip()
