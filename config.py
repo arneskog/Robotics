@@ -1,6 +1,8 @@
 import pygame
 import math
 import sys
+import matplotlib.pyplot as plt
+import numpy as np
 
 pygame.init()
 WIDTH, HEIGHT = 900, 600
