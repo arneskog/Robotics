@@ -172,9 +172,9 @@ def main():
 
         screen.fill((30, 30, 30))
 
-        points_left_world, points_right_world = draw_sin_lanes(screen, state[0], state[1])
+        points_left_lane, points_right_lane = draw_sin_lanes(screen, state[0], state[1])
 
-        world_corners = draw_car(screen, state)
+        points_car_corners = draw_car(screen, state)
         
 
         pygame.display.flip()
