@@ -14,7 +14,8 @@ def draw_sin_lanes(screen, car_x, car_y):
 
     x_min = car_x - 30
     x_max = car_x + 50
-    step = 0.5
+    # coarser sampling to reduce drawing/work per frame
+    step = 1.0
 
     x = x_min
     while x <= x_max:
@@ -36,7 +37,46 @@ def draw_sin_lanes(screen, car_x, car_y):
     pygame.draw.lines(screen, (200, 200, 200), False, points_left_screen, 3)
     pygame.draw.lines(screen, (200, 200, 200), False, points_right_screen, 3)
 
-    return points_left_world, points_right_world
+    # split world points into separate x/y lists so callers can unpack easily
+    x_left = [p[0] for p in points_left_world]
+    y_left = [p[1] for p in points_left_world]
+    x_right = [p[0] for p in points_right_world]
+    y_right = [p[1] for p in points_right_world]
+
+    return x_left, y_left, x_right, y_right
+
+
+def draw_camera_points(screen, car_x, car_y,
+                       measured_x_lane_1, measured_y_lane_1,
+                       measured_x_lane_2=None, measured_y_lane_2=None,
+                       color_left=(0, 255, 0), color_right=(255, 255, 0), radius=4):
+    """Draw points detected by the camera sensor.
+
+    - `measured_x_lane_*`, `measured_y_lane_*` can be lists or numpy arrays.
+    - If lane 2 is not provided, only lane 1 points are drawn.
+    """
+    # draw left-lane detections
+    if measured_x_lane_1 is not None and measured_y_lane_1 is not None:
+        try:
+            for mx, my in zip(measured_x_lane_1, measured_y_lane_1):
+                if mx is None or my is None:
+                    continue
+                sx, sy = world_to_screen(float(mx), float(my), car_x, car_y)
+                pygame.draw.circle(screen, color_left, (sx, sy), radius)
+        except Exception:
+            # if inputs can't be iterated, skip drawing
+            pass
+
+    # draw right-lane detections
+    if measured_x_lane_2 is not None and measured_y_lane_2 is not None:
+        try:
+            for mx, my in zip(measured_x_lane_2, measured_y_lane_2):
+                if mx is None or my is None:
+                    continue
+                sx, sy = world_to_screen(float(mx), float(my), car_x, car_y)
+                pygame.draw.circle(screen, color_right, (sx, sy), radius)
+        except Exception:
+            pass
     
 
 def draw_car(screen, state):
