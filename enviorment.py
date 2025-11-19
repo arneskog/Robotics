@@ -120,3 +120,31 @@ def draw_car(screen, state):
     wy_wheel = front_world[1] + wheel_len * math.sin(theta + phi)
     wheel_screen = world_to_screen(wx_wheel, wy_wheel, x, y)
     pygame.draw.line(screen, (255, 0, 0), front_screen, wheel_screen, 2)
+
+
+def draw_mpc_trajectory(screen, car_x, car_y, x_ref_array, y_ref_array, color=(255, 0, 255), width=2, marker_radius=3):
+    """Draw MPC-generated trajectory (world coordinates) on the screen.
+
+    - `x_ref_array`, `y_ref_array` can be lists or numpy arrays of same length.
+    - Returns the list of screen-space points drawn.
+    """
+    if x_ref_array is None or y_ref_array is None:
+        return []
+
+    pts = []
+    try:
+        for xw, yw in zip(x_ref_array, y_ref_array):
+            sx, sy = world_to_screen(float(xw), float(yw), car_x, car_y)
+            pts.append((sx, sy))
+
+        if not pts:
+            return []
+
+        # draw polyline and small markers at each waypoint
+        pygame.draw.lines(screen, color, False, pts, width)
+        for p in pts:
+            pygame.draw.circle(screen, color, p, marker_radius)
+
+        return pts
+    except Exception:
+        return []

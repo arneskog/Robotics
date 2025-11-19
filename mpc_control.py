@@ -15,11 +15,12 @@ def cost_function(u, state0, x_ref, y_ref, L, v, dt, horizon):
     cost = 0.0
 
     # weights
-    w_pos = 1.0     # tracking
-    w_steer = 0.1   # penalty on steering magnitude
+    w_pos = 8     # tracking
+    w_phi = 5     # phi to zero
+    w_steer = 0.1  # penalty on steering magnitude
 
     for i in range(horizon):
-        omega_s = u[i]
+        omega_s = u[i]*dt
 
         # propagate state one step ahead
         x, y, theta, phi = car_kinematics(
@@ -35,7 +36,9 @@ def cost_function(u, state0, x_ref, y_ref, L, v, dt, horizon):
         dist_sq = ex*ex + ey*ey
 
         # add to cost
-        cost += w_pos * dist_sq + w_steer * (omega_s**2)
+        cost += w_pos * dist_sq + w_phi * (phi**2)
+        if i > 0:
+            cost += w_steer * (u[i] - u[i-1])**2
 
     return cost
 
@@ -75,7 +78,7 @@ def solve_mpc(state, x_ref, y_ref, L, v, dt, horizon=10):
     u0 = np.zeros(horizon)  # Zero steering input initially
 
     # Constraints: Steering limit ([-max_steering, max_steering])
-    max_steering = np.radians(35)
+    max_steering = PHI_RATE
     bounds = [(-max_steering, max_steering)] * horizon
     
     # Optimize the control inputs using the cost function

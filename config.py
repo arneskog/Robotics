@@ -10,18 +10,19 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 
 L = 2.5                
-V = 2.0               
+V = 4.0               
 SCALE = 25.0           
 FPS = 30
 INIT_STATE = [0.0, 0.0, 0.0, 0.0]   #[x, y, theta, phi]
 INIT_OMEGA_S = 0
+DAMPED_OMEGA = 0.1
 
 
 PHI_MAX = math.radians(35)
 PHI_RATE = math.radians(3)
 
 
-LANE_WIDTH = 6       
+LANE_WIDTH = 3       
 AMPLITUDE = 4.0              
 FREGUENCY = 0.05
 
