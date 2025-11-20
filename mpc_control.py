@@ -68,7 +68,6 @@ def generate_trajectory(x_ref, y_ref, x_car, y_car, v, dt):
     # Generate smooth trajectory based on spline interpolation
     trajectory_x = spline_x(t_knots)
     trajectory_y = spline_y(t_knots)
-
     return trajectory_x, trajectory_y
 
 

@@ -17,6 +17,8 @@ INIT_STATE = [0.0, 0.0, 0.0, 0.0]   #[x, y, theta, phi]
 INIT_OMEGA_S = 0
 DAMPED_OMEGA = 0.1
 
+LOOKAHEAD_DISTANCE = 32
+
 
 PHI_MAX = math.radians(35)
 PHI_RATE = math.radians(3)

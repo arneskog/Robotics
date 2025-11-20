@@ -122,7 +122,7 @@ def draw_car(screen, state):
     pygame.draw.line(screen, (255, 0, 0), front_screen, wheel_screen, 2)
 
 
-def draw_mpc_trajectory(screen, car_x, car_y, x_ref_array, y_ref_array, color=(255, 0, 255), width=2, marker_radius=3):
+def draw_mpc_trajectory(screen, car_x, car_y, x_ref_array, y_ref_array, color=(255, 0, 255), width=2, marker_radius=1):
     """Draw MPC-generated trajectory (world coordinates) on the screen.
 
     - `x_ref_array`, `y_ref_array` can be lists or numpy arrays of same length.
