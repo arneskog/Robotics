@@ -22,9 +22,6 @@ def main():
     time_array.append(0.0)
     current_time = 0.0
     ref = []
-    # throttle MPC to run only every N frames to reduce CPU load
-    frame_counter = 0
-    MPC_INTERVAL = 4  # run MPC every 4 frames (approx every 4/FPS seconds)
 
 
     while running:
@@ -54,12 +51,12 @@ def main():
             draw_camera_points(screen, state[0], state[1], measured_x_lane_1, measured_y_lane_1, measured_x_lane_2, measured_y_lane_2)
         if (np.min(distances_to_car_lane_1) <= CRITICAL_DISTANCE) or (np.min(distances_to_car_lane_2) <= CRITICAL_DISTANCE):
             
-            if (np.sum(measured_x_lane_1 > state[0]) and np.sum(measured_x_lane_2 > state[0])) > int(32): # Ma distance for the lookahead to 8m
+            if (np.sum(measured_x_lane_1 > state[0]) and np.sum(measured_x_lane_2 > state[0])) > int(LOOKAHEAD_DISTANCE): # Ma distance for the lookahead to 8m
                 indices_ahead_1 = np.where(measured_x_lane_1 > state[0])[0]
                 indices_ahead_2 = np.where(measured_x_lane_2 > state[0])[0]
 
-                idx_1 = indices_ahead_1[int(32)-1]
-                idx_2 = indices_ahead_2[int(32)-1]
+                idx_1 = indices_ahead_1[int(LOOKAHEAD_DISTANCE)-1]
+                idx_2 = indices_ahead_2[int(LOOKAHEAD_DISTANCE)-1]
                 
 
             else:
@@ -75,13 +72,12 @@ def main():
 
             x_ref_array, y_ref_array = generate_trajectory(x_ref, y_ref, state[0], state[1], V, dt=dt)
 
-            horizon = min(len(x_ref_array), 32)
+            horizon = min(len(x_ref_array), LOOKAHEAD_DISTANCE)
             w_s = solve_mpc(state, x_ref_array, y_ref_array, L, V, dt=dt, horizon=horizon)
             # draw the MPC reference trajectory on the screen
-            try:
-                draw_mpc_trajectory(screen, state[0], state[1], x_ref_array, y_ref_array)
-            except Exception:
-                pass
+
+            draw_mpc_trajectory(screen, state[0], state[1], x_ref_array, y_ref_array)
+
             omega_s * DAMPED_OMEGA
 
         else:
@@ -109,8 +105,6 @@ def main():
 
 
         pygame.display.flip()
-
-        frame_counter += 1
 
     pygame.quit()
 
