@@ -14,7 +14,8 @@ def draw_sin_lanes(screen, car_x, car_y):
 
     x_min = car_x - 30
     x_max = car_x + 50
-    step = 0.5
+    # coarser sampling to reduce drawing/work per frame
+    step = 1.0
 
     x = x_min
     while x <= x_max:
@@ -36,7 +37,46 @@ def draw_sin_lanes(screen, car_x, car_y):
     pygame.draw.lines(screen, (200, 200, 200), False, points_left_screen, 3)
     pygame.draw.lines(screen, (200, 200, 200), False, points_right_screen, 3)
 
-    return points_left_world, points_right_world
+    # split world points into separate x/y lists so callers can unpack easily
+    x_left = [p[0] for p in points_left_world]
+    y_left = [p[1] for p in points_left_world]
+    x_right = [p[0] for p in points_right_world]
+    y_right = [p[1] for p in points_right_world]
+
+    return x_left, y_left, x_right, y_right
+
+
+def draw_camera_points(screen, car_x, car_y,
+                       measured_x_lane_1, measured_y_lane_1,
+                       measured_x_lane_2=None, measured_y_lane_2=None,
+                       color_left=(0, 255, 0), color_right=(255, 255, 0), radius=4):
+    """Draw points detected by the camera sensor.
+
+    - `measured_x_lane_*`, `measured_y_lane_*` can be lists or numpy arrays.
+    - If lane 2 is not provided, only lane 1 points are drawn.
+    """
+    # draw left-lane detections
+    if measured_x_lane_1 is not None and measured_y_lane_1 is not None:
+        try:
+            for mx, my in zip(measured_x_lane_1, measured_y_lane_1):
+                if mx is None or my is None:
+                    continue
+                sx, sy = world_to_screen(float(mx), float(my), car_x, car_y)
+                pygame.draw.circle(screen, color_left, (sx, sy), radius)
+        except Exception:
+            # if inputs can't be iterated, skip drawing
+            pass
+
+    # draw right-lane detections
+    if measured_x_lane_2 is not None and measured_y_lane_2 is not None:
+        try:
+            for mx, my in zip(measured_x_lane_2, measured_y_lane_2):
+                if mx is None or my is None:
+                    continue
+                sx, sy = world_to_screen(float(mx), float(my), car_x, car_y)
+                pygame.draw.circle(screen, color_right, (sx, sy), radius)
+        except Exception:
+            pass
     
 
 def draw_car(screen, state):
@@ -80,3 +120,31 @@ def draw_car(screen, state):
     wy_wheel = front_world[1] + wheel_len * math.sin(theta + phi)
     wheel_screen = world_to_screen(wx_wheel, wy_wheel, x, y)
     pygame.draw.line(screen, (255, 0, 0), front_screen, wheel_screen, 2)
+
+
+def draw_mpc_trajectory(screen, car_x, car_y, x_ref_array, y_ref_array, color=(255, 0, 255), width=2, marker_radius=1):
+    """Draw MPC-generated trajectory (world coordinates) on the screen.
+
+    - `x_ref_array`, `y_ref_array` can be lists or numpy arrays of same length.
+    - Returns the list of screen-space points drawn.
+    """
+    if x_ref_array is None or y_ref_array is None:
+        return []
+
+    pts = []
+    try:
+        for xw, yw in zip(x_ref_array, y_ref_array):
+            sx, sy = world_to_screen(float(xw), float(yw), car_x, car_y)
+            pts.append((sx, sy))
+
+        if not pts:
+            return []
+
+        # draw polyline and small markers at each waypoint
+        pygame.draw.lines(screen, color, False, pts, width)
+        for p in pts:
+            pygame.draw.circle(screen, color, p, marker_radius)
+
+        return pts
+    except Exception:
+        return []
