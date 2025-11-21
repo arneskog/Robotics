@@ -18,6 +18,7 @@ INIT_OMEGA_S = 0
 DAMPED_OMEGA = 0.1
 
 LOOKAHEAD_DISTANCE = 6
+SAMPLING_INTERVAL = 0.5
 
 
 PHI_MAX = math.radians(35)
@@ -35,11 +36,8 @@ K_L = 0.05
 
 CRITICAL_DISTANCE = 0.2
 
-X_MAX = 100
-N = 1000
-
 #Sensor
-MAX_RANGE = 12.0         
+MAX_RANGE = 8.0         
 BASE_SIGMA = 0.05        
 SIGMA_SLOPE = 0.02       
 

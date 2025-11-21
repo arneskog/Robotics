@@ -50,12 +50,12 @@ def main():
             if (np.min(distances_to_car_lane_2) <= CRITICAL_DISTANCE):
                 near_right_lane = True
             
-            if (np.sum(measured_x_lane_1 > state[0]) and np.sum(measured_x_lane_2 > state[0])) > int(LOOKAHEAD_DISTANCE):
+            if (np.sum(measured_x_lane_1 > state[0]) and np.sum(measured_x_lane_2 > state[0])) > int(LOOKAHEAD_DISTANCE/SAMPLING_INTERVAL):
                 indices_ahead_1 = np.where(measured_x_lane_1 > state[0])[0]
                 indices_ahead_2 = np.where(measured_x_lane_2 > state[0])[0]
 
-                idx_1 = indices_ahead_1[int(LOOKAHEAD_DISTANCE)-1]
-                idx_2 = indices_ahead_2[int(LOOKAHEAD_DISTANCE)-1]
+                idx_1 = indices_ahead_1[int(LOOKAHEAD_DISTANCE/SAMPLING_INTERVAL)-1]
+                idx_2 = indices_ahead_2[int(LOOKAHEAD_DISTANCE/SAMPLING_INTERVAL)-1]
                 
 
             else:

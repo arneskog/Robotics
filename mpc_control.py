@@ -9,7 +9,7 @@ def cost_function(u, state0, x_ref, y_ref, L, v, dt, horizon):
     V_step = v * dt
     cost = 0.0
 
-    w_pos = 30   
+    w_pos = 10   
     w_phi = 1   
     w_steer = 0.1
 
@@ -40,12 +40,8 @@ def generate_trajectory(x_ref, y_ref, x_car, y_car, v, near_left_lane, near_righ
     distance = np.sqrt((x_ref - x_car)**2 + (y_ref - y_car)**2)
 
     waypoints_distance = v * dt
-    if waypoints_distance <= 0:
-        waypoints_distance = 1e-6
 
     num_waypoints = int(np.floor(distance / waypoints_distance))
-    if num_waypoints < 2:
-        num_waypoints = 2
 
     waypoints_x = np.linspace(x_car, x_ref, num_waypoints)
     waypoints_y = np.linspace(y_car, y_ref, num_waypoints)

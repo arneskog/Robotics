@@ -14,7 +14,6 @@ def draw_sin_lanes(screen, car_x, car_y):
 
     x_min = car_x - 30
     x_max = car_x + 50
-    step = 1.0
 
     x = x_min
     while x <= x_max:
@@ -31,7 +30,7 @@ def draw_sin_lanes(screen, car_x, car_y):
         points_left_screen.append((sx_left, sy_left))
         points_right_screen.append((sx_right, sy_right))
 
-        x += step
+        x += SAMPLING_INTERVAL
 
     pygame.draw.lines(screen, (200, 200, 200), False, points_left_screen, 3)
     pygame.draw.lines(screen, (200, 200, 200), False, points_right_screen, 3)
