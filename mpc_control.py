@@ -30,6 +30,9 @@ def cost_function(u, state0, x_ref, y_ref, L, v, dt, horizon):
         cost += w_pos * dist_sq + w_phi * (phi**2)
         if i > 0:
             cost += w_steer * (u[i] - u[i-1])**2
+        
+        if abs(phi) > PHI_MAX:
+            cost += 1e3 * (abs(phi) - PHI_MAX)**2
 
     return cost
 
