@@ -3,7 +3,6 @@ from enviorment import *
 import numpy as np
 from joystick import *
 from carModel import *
-from sensor_old import *
 from plot import *
 from sensors import *
 from mpc_control import *
@@ -45,8 +44,13 @@ def main():
             measured_x_lane_1, measured_y_lane_1, distances_to_car_lane_1, measured_x_lane_2, measured_y_lane_2, distances_to_car_lane_2 = camera_measurement
             draw_camera_points(screen, state[0], state[1], measured_x_lane_1, measured_y_lane_1, measured_x_lane_2, measured_y_lane_2)
         if (np.min(distances_to_car_lane_1) <= CRITICAL_DISTANCE) or (np.min(distances_to_car_lane_2) <= CRITICAL_DISTANCE):
+
+            if (np.min(distances_to_car_lane_1) <= CRITICAL_DISTANCE):
+                near_left_lane = True
+            if (np.min(distances_to_car_lane_2) <= CRITICAL_DISTANCE):
+                near_right_lane = True
             
-            if (np.sum(measured_x_lane_1 > state[0]) and np.sum(measured_x_lane_2 > state[0])) > int(LOOKAHEAD_DISTANCE): # Ma distance for the lookahead to 8m
+            if (np.sum(measured_x_lane_1 > state[0]) and np.sum(measured_x_lane_2 > state[0])) > int(LOOKAHEAD_DISTANCE):
                 indices_ahead_1 = np.where(measured_x_lane_1 > state[0])[0]
                 indices_ahead_2 = np.where(measured_x_lane_2 > state[0])[0]
 
@@ -65,19 +69,18 @@ def main():
             x_ref = 0.5 * (measured_x_lane_1[idx_1] + measured_x_lane_2[idx_2])
             y_ref = 0.5 * (measured_y_lane_1[idx_1] + measured_y_lane_2[idx_2])
 
-            x_ref_array, y_ref_array = generate_trajectory(x_ref, y_ref, state[0], state[1], V, dt=dt)
+            x_ref_array, y_ref_array = generate_trajectory(x_ref, y_ref, state[0], state[1], V, near_left_lane, near_right_lane, dt)
 
             horizon = min(len(x_ref_array), LOOKAHEAD_DISTANCE)
             w_s = solve_mpc(state, x_ref_array, y_ref_array, L, V, dt=dt, horizon=horizon)
-            # draw the MPC reference trajectory on the screen
-
             draw_mpc_trajectory(screen, state[0], state[1], x_ref_array, y_ref_array)
-
-            omega_s * DAMPED_OMEGA
 
         else:
             w_s = 0
             ref.append((0, 0))
+            near_right_lane = False
+            near_left_lane = False
+
 
         
         omega_s_array_human.append(omega_s_human)
@@ -103,9 +106,9 @@ def main():
 
     pygame.quit()
 
-    plot_lanes_and_position_car(state_array)
-    plot_omega_s(omega_s_array_human, time_array)
-    plot_omega_s(omega_s_array_mpc, time_array)
+    # plot_lanes_and_position_car(state_array)
+    # plot_omega_s(omega_s_array_human, time_array)
+    # plot_omega_s(omega_s_array_mpc, time_array)
     sys.exit()
 
 if __name__ == "__main__":

@@ -12,12 +12,12 @@ clock = pygame.time.Clock()
 L = 2.5                
 V = 4.0               
 SCALE = 25.0           
-FPS = 30
+FPS = 20
 INIT_STATE = [0.0, 0.0, 0.0, 0.0]   #[x, y, theta, phi]
 INIT_OMEGA_S = 0
 DAMPED_OMEGA = 0.1
 
-LOOKAHEAD_DISTANCE = 32
+LOOKAHEAD_DISTANCE = 6
 
 
 PHI_MAX = math.radians(35)
