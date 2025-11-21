@@ -33,11 +33,6 @@ def main():
         
         screen.fill((30, 30, 30))
         x_lane_1, y_lane_1, x_lane_2, y_lane_2 = draw_sin_lanes(screen, state[0], state[1])
-        # convert to numpy arrays for vectorized operations in sensors
-        x_lane_1 = np.array(x_lane_1, dtype=float)
-        y_lane_1 = np.array(y_lane_1, dtype=float)
-        x_lane_2 = np.array(x_lane_2, dtype=float)
-        y_lane_2 = np.array(y_lane_2, dtype=float)
         draw_car(screen, state)
 
         camera_measurement = camera_sensor(state[0], state[1], x_lane_1, y_lane_1, x_lane_2, y_lane_2)
