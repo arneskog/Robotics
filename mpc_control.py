@@ -9,12 +9,12 @@ def cost_function(u, state0, x_ref, y_ref, L, v, dt, horizon):
     V_step = v * dt
     cost = 0.0
 
-    w_pos = 8   
-    w_phi = 5   
+    w_pos = 30   
+    w_phi = 1   
     w_steer = 0.1
 
     for i in range(horizon):
-        omega_s = u[i]*dt
+        omega_s = u[i]
 
         x, y, theta, phi = car_kinematics(
             [x, y, theta, phi],
@@ -36,27 +36,31 @@ def cost_function(u, state0, x_ref, y_ref, L, v, dt, horizon):
 
     return cost
 
-def generate_trajectory(x_ref, y_ref, x_car, y_car, v, dt): 
+def generate_trajectory(x_ref, y_ref, x_car, y_car, v, near_left_lane, near_right_lane, dt, curvature_factor=8.0):
     distance = np.sqrt((x_ref - x_car)**2 + (y_ref - y_car)**2)
 
     waypoints_distance = v * dt
-    if waypoints_distance <= 0:
-        waypoints_distance = 1e-6
 
     num_waypoints = int(np.floor(distance / waypoints_distance))
-    if num_waypoints < 2:
-        num_waypoints = 2
 
     waypoints_x = np.linspace(x_car, x_ref, num_waypoints)
     waypoints_y = np.linspace(y_car, y_ref, num_waypoints)
 
-
     t_knots = np.linspace(0, 1, num_waypoints)
+
     spline_x = CubicSpline(t_knots, waypoints_x)
     spline_y = CubicSpline(t_knots, waypoints_y)
 
     trajectory_x = spline_x(t_knots)
     trajectory_y = spline_y(t_knots)
+
+    if near_left_lane:
+        trajectory_x = trajectory_x + curvature_factor * np.cos(np.linspace(0, np.pi, num_waypoints)) * 0.05
+        trajectory_y = trajectory_y + -curvature_factor * np.sin(np.linspace(0, np.pi, num_waypoints)) * 0.05
+    if near_right_lane:
+        trajectory_x = trajectory_x + curvature_factor * np.cos(np.linspace(0, np.pi, num_waypoints)) * 0.05
+        trajectory_y = trajectory_y + curvature_factor * np.sin(np.linspace(0, np.pi, num_waypoints)) * 0.05
+
     return trajectory_x, trajectory_y
 
 

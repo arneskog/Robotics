@@ -3,12 +3,6 @@ from config import *
 
 
 def plot_lanes_and_position_car(state_array, x_margin=10.0, save_path=None):
-	"""Plot lane lines and car XY trajectory collected during runtime.
-
-	- `state_array`: list of (x, y) tuples
-	- `x_margin`: how far beyond recorded x-range to render lanes
-	- `save_path`: optional path to save PNG; if None the plot window is shown
-	"""
 	if len(state_array) == 0:
 		return
 
@@ -45,29 +39,60 @@ def plot_lanes_and_position_car(state_array, x_margin=10.0, save_path=None):
 		plt.show()
 
 
-def plot_omega_s(omega_s_array, time_array=None, save_path=None):
-	"""Plot steering input over time.
+def plot_omega_s_human(omega_s_array, time_array=None, save_path=None):
+    """Plot steering input over time.
 
-	- `omega_s_array`: list of omega_s samples
-	- `time_array`: optional list of timestamps (same length). If None, FPS from config is used.
-	"""
-	import numpy as _np
+    - `omega_s_array`: list of omega_s samples
+    - `time_array`: optional list of timestamps (same length). If None, FPS from config is used.
+    """
+    import numpy as _np
+    import matplotlib.pyplot as plt
 
-	ys = _np.array(omega_s_array)
-	if time_array is None:
-		ts = _np.arange(len(ys)) / float(FPS)
-	else:
-		ts = _np.array(time_array)
+    ys = _np.array(omega_s_array)
+    if time_array is None:
+        ts = _np.arange(len(ys)) / float(FPS)
+    else:
+        ts = _np.array(time_array)
 
-	plt.figure(figsize=(8, 3.5))
-	plt.plot(ts, ys, color='tab:orange')
-	plt.xlabel('time (s)')
-	plt.ylabel('omega_s (rad/s)')
-	plt.title('Human steering input over time')
-	plt.grid(True, linestyle=':', alpha=0.6)
+    plt.figure(figsize=(10, 5))  # Adjusted size for better spacing
+    plt.plot(ts, ys, color='tab:orange', linewidth=1.5)  # Decreased line width for a smoother look
+    plt.xlabel('Time (s)', fontsize=12)
+    plt.ylabel(r'$\omega_s$ (rad/s)', fontsize=12)  # Improved readability with LaTeX
+    plt.title('Human steering input over time', fontsize=14)
+    plt.grid(True, linestyle=':', alpha=0.6)
 
-	if save_path:
-		plt.savefig(save_path, dpi=200, bbox_inches='tight')
-		plt.close()
-	else:
-		plt.show()
+    if save_path:
+        plt.savefig(save_path, dpi=200, bbox_inches='tight')
+        plt.close()
+    else:
+        plt.show()
+
+
+def plot_omega_s_mpc(omega_s_array, time_array=None, save_path=None):
+    """Plot MPC steering input over time with improved appearance."""
+    import numpy as _np
+    import matplotlib.pyplot as plt
+
+    ys = _np.array(omega_s_array)
+    if time_array is None:
+        ts = _np.arange(len(ys)) / float(FPS)
+    else:
+        ts = _np.array(time_array)
+
+    plt.figure(figsize=(10, 5))  # Adjusted size for better spacing
+    plt.plot(ts, ys, color='tab:blue', linewidth=1.5)  # Decreased line width for a smoother look
+    plt.xlabel('Time (s)', fontsize=12)
+    plt.ylabel(r'$\omega_s$ (rad/s)', fontsize=12)  # Improved readability with LaTeX
+    plt.title('MPC Steering Input Over Time', fontsize=14)
+    plt.grid(True, linestyle=':', alpha=0.6)
+
+    plt.xlim([0, ts[-1]])  # Ensure the x-axis covers the entire time range
+    plt.ylim([min(ys) - 0.01, max(ys) + 0.01])  # Slight padding on y-axis
+
+    plt.tight_layout()
+
+    if save_path:
+        plt.savefig(save_path, dpi=200, bbox_inches='tight')
+        plt.close()
+    else:
+        plt.show()
