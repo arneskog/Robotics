@@ -22,6 +22,11 @@ def main():
     time_array.append(0.0)
     current_time = 0.0
     ref = []
+    
+    sensor_snapshots = []          
+    snapshot_interval = 5.0        
+    next_snapshot_time = 0.0
+
 
 
     while running:
@@ -90,6 +95,15 @@ def main():
         current_time += dt
         time_array.append(current_time)
 
+        if current_time >= next_snapshot_time:
+            sensor_snapshots.append([
+                measured_x_lane_1.copy(),
+                measured_y_lane_1.copy(),
+                measured_x_lane_2.copy(),
+                measured_y_lane_2.copy()
+            ])
+            next_snapshot_time += snapshot_interval
+
         V_step = V*dt  
         state = car_kinematics(state, L, V_step, omega_s_human+w_s)
 
@@ -108,12 +122,15 @@ def main():
     pygame.quit()
     lanes_and_position_path   = os.path.join('Results', f'lanes_and_position.png') 
     human_path = os.path.join('Results', f'omega_human.png')
-    mpc_path   = os.path.join('Results', f'omega_mpc.png') 
+    mpc_path   = os.path.join('Results', f'omega_mpc.png')
+    sensor_snapshots_path = os.path.join('Results', 'sensor_snapshots.png')
 
 
     plot_lanes_and_position_car(state_array, save_path=lanes_and_position_path)
     plot_omega_s_human(omega_s_array_human, time_array=time_array, save_path=human_path)
     plot_omega_s_mpc(omega_s_array_mpc, time_array=time_array, save_path=mpc_path)
+    plot_sensor_snapshots(sensor_snapshots, state_array=state_array, save_path=sensor_snapshots_path)
+ 
     sys.exit()
 
 if __name__ == "__main__":

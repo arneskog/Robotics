@@ -27,7 +27,7 @@ PHI_RATE = math.radians(3)
 
 
 LANE_WIDTH = 3       
-AMPLITUDE = 8             
+AMPLITUDE = 4             
 FREGUENCY = 0.05
 
 
