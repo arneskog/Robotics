@@ -21,20 +21,19 @@ def main():
     time_array.append(0.0)
     current_time = 0.0
     ref = []
-    
+
     sensor_snapshots = []          
     snapshot_interval = 5.0        
     next_snapshot_time = 0.0
-
+    
 
 
     while running:
-        dt = clock.tick(FPS) / 1000.0
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-        
+        dt = clock.tick(FPS) / 1000.0
+        V_step = V*dt
         screen.fill((30, 30, 30))
         x_lane_1, y_lane_1, x_lane_2, y_lane_2 = draw_sin_lanes(screen, state[0], state[1])
         draw_car(screen, state)
@@ -49,11 +48,14 @@ def main():
             measured_x_lane_1, measured_y_lane_1, distances_to_car_lane_1, measured_x_lane_2, measured_y_lane_2, distances_to_car_lane_2 = camera_measurement
             draw_camera_points(screen, state[0], state[1], measured_x_lane_1, measured_y_lane_1, measured_x_lane_2, measured_y_lane_2)
         
-        if CONTROLLER_ACTIVE and ((np.min(distances_to_car_lane_1) <= CRITICAL_DISTANCE) or (np.min(distances_to_car_lane_2) <= CRITICAL_DISTANCE)):
+        distance_min_lane_1  = distance_min(distances_to_car_lane_1)
+        distance_min_lane_2 = distance_min(distances_to_car_lane_2) 
 
-            if (np.min(distances_to_car_lane_1) <= CRITICAL_DISTANCE):
+        if CONTROLLER_ACTIVE and ((distance_min_lane_1 <= CRITICAL_DISTANCE) or (distance_min_lane_2 <= CRITICAL_DISTANCE)):
+
+            if (distance_min_lane_1 <= CRITICAL_DISTANCE):
                 near_left_lane = True
-            if (np.min(distances_to_car_lane_2) <= CRITICAL_DISTANCE):
+            if (distance_min_lane_2 <= CRITICAL_DISTANCE):
                 near_right_lane = True
             
             if (np.sum(measured_x_lane_1 > state[0]) and np.sum(measured_x_lane_2 > state[0])) > int(LOOKAHEAD_DISTANCE/SAMPLING_INTERVAL):
@@ -92,31 +94,27 @@ def main():
 
         current_time += dt
         time_array.append(current_time)
-
-        if current_time >= next_snapshot_time:
-            sensor_snapshots.append([
-                measured_x_lane_1.copy(),
-                measured_y_lane_1.copy(),
-                measured_x_lane_2.copy(),
-                measured_y_lane_2.copy(),
-                float(state[0]),
-                float(state[1])
-            ])
-            next_snapshot_time += snapshot_interval
-
-        V_step = V*dt  
+ 
         state = car_kinematics(state, L, V_step, omega_s_human+w_s)
-
-
-        state_array.append((state[0], state[1]))
-
 
         if state[3] > PHI_MAX:
             state[3]  = PHI_MAX
         elif state[3]  < -PHI_MAX:
             state[3]  = -PHI_MAX  
 
+        state_array.append((state[0], state[1]))
 
+        if current_time >= next_snapshot_time:
+            sensor_snapshots.append([
+                measured_x_lane_1,
+                measured_y_lane_1,
+                measured_x_lane_2,
+                measured_y_lane_2,
+                state[0],
+                state[1]
+            ])
+            next_snapshot_time += snapshot_interval
+        
         pygame.display.flip()
 
     pygame.quit()

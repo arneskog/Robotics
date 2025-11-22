@@ -31,3 +31,11 @@ def measure_lane(car_x, car_y, x_lane, y_lane):
             y_noisy = y_detected
 
         return x_noisy, y_noisy, dist_detected
+
+def distance_min(arr):
+    if arr is None:
+        return np.inf
+    arr = np.asarray(arr)
+    if arr.size == 0:
+        return np.inf
+    return np.min(arr)
