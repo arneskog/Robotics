@@ -32,11 +32,11 @@ def cost_function(u, state0, x_ref, y_ref, L, v, dt, horizon):
             cost += w_steer * (u[i] - u[i-1])**2
         
         if abs(phi) > PHI_MAX:
-            cost += 1e3 * (abs(phi) - PHI_MAX)**2
+            cost += 1e3 * (abs(phi) - PHI_MAX)**2   # Large cost if phi out of bounds
 
     return cost
 
-def generate_trajectory(x_ref, y_ref, x_car, y_car, v, dt):
+def generate_trajectory(x_ref, y_ref, x_car, y_car, v, dt): 
     distance = np.sqrt((x_ref - x_car)**2 + (y_ref - y_car)**2)
 
     waypoints_distance = v * dt
