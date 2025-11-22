@@ -1,7 +1,5 @@
+from config import *
 from carModel import *
-import numpy as np
-from scipy.optimize import minimize
-from scipy.interpolate import CubicSpline
 
 def cost_function(u, state0, x_ref, y_ref, L, v, dt, horizon):
     x, y, theta, phi = state0

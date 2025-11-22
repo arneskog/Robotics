@@ -1,6 +1,5 @@
 from config import *
 from enviorment import *
-import numpy as np
 from joystick import *
 from carModel import *
 from plot import *
@@ -49,6 +48,7 @@ def main():
         else:
             measured_x_lane_1, measured_y_lane_1, distances_to_car_lane_1, measured_x_lane_2, measured_y_lane_2, distances_to_car_lane_2 = camera_measurement
             draw_camera_points(screen, state[0], state[1], measured_x_lane_1, measured_y_lane_1, measured_x_lane_2, measured_y_lane_2)
+        
         if CONTROLLER_ACTIVE and ((np.min(distances_to_car_lane_1) <= CRITICAL_DISTANCE) or (np.min(distances_to_car_lane_2) <= CRITICAL_DISTANCE)):
 
             if (np.min(distances_to_car_lane_1) <= CRITICAL_DISTANCE):
@@ -86,8 +86,6 @@ def main():
             ref.append((0, 0))
             near_right_lane = False
             near_left_lane = False
-
-
         
         omega_s_array_human.append(omega_s_human)
         omega_s_array_mpc.append(w_s)
@@ -100,7 +98,9 @@ def main():
                 measured_x_lane_1.copy(),
                 measured_y_lane_1.copy(),
                 measured_x_lane_2.copy(),
-                measured_y_lane_2.copy()
+                measured_y_lane_2.copy(),
+                float(state[0]),
+                float(state[1])
             ])
             next_snapshot_time += snapshot_interval
 
@@ -120,16 +120,11 @@ def main():
         pygame.display.flip()
 
     pygame.quit()
-    lanes_and_position_path   = os.path.join('Results', f'lanes_and_position.png') 
-    human_path = os.path.join('Results', f'omega_human.png')
-    mpc_path   = os.path.join('Results', f'omega_mpc.png')
-    sensor_snapshots_path = os.path.join('Results', 'sensor_snapshots.png')
-
-
-    plot_lanes_and_position_car(state_array, save_path=lanes_and_position_path)
-    plot_omega_s_human(omega_s_array_human, time_array=time_array, save_path=human_path)
-    plot_omega_s_mpc(omega_s_array_mpc, time_array=time_array, save_path=mpc_path)
-    plot_sensor_snapshots(sensor_snapshots, state_array=state_array, save_path=sensor_snapshots_path)
+    
+    plot_lanes_and_position_car(state_array)
+    plot_omega_s_human(omega_s_array_human, time_array=time_array)
+    plot_omega_s_mpc(omega_s_array_mpc, time_array=time_array)
+    plot_sensor_snapshots(sensor_snapshots, state_array=state_array)
  
     sys.exit()
 
