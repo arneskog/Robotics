@@ -9,7 +9,7 @@ def cost_function(u, state0, x_ref, y_ref, L, v, dt, horizon):
     V_step = v * dt
     cost = 0.0
 
-    w_pos = 10   
+    w_pos = 30   
     w_phi = 1   
     w_steer = 0.1
 

@@ -7,6 +7,7 @@ from plot import *
 from sensors import *
 from mpc_control import *
 
+
 def main():
     state = INIT_STATE   
     omega_s = INIT_OMEGA_S
@@ -43,7 +44,7 @@ def main():
         else:
             measured_x_lane_1, measured_y_lane_1, distances_to_car_lane_1, measured_x_lane_2, measured_y_lane_2, distances_to_car_lane_2 = camera_measurement
             draw_camera_points(screen, state[0], state[1], measured_x_lane_1, measured_y_lane_1, measured_x_lane_2, measured_y_lane_2)
-        if (np.min(distances_to_car_lane_1) <= CRITICAL_DISTANCE) or (np.min(distances_to_car_lane_2) <= CRITICAL_DISTANCE):
+        if CONTROLLER_ACTIVE and ((np.min(distances_to_car_lane_1) <= CRITICAL_DISTANCE) or (np.min(distances_to_car_lane_2) <= CRITICAL_DISTANCE)):
 
             if (np.min(distances_to_car_lane_1) <= CRITICAL_DISTANCE):
                 near_left_lane = True
@@ -89,7 +90,7 @@ def main():
         current_time += dt
         time_array.append(current_time)
 
-        V_step = V * dt  
+        V_step = V*dt  
         state = car_kinematics(state, L, V_step, omega_s_human+w_s)
 
 
@@ -105,10 +106,14 @@ def main():
         pygame.display.flip()
 
     pygame.quit()
+    lanes_and_position_path   = os.path.join('Results', f'lanes_and_position.png') 
+    human_path = os.path.join('Results', f'omega_human.png')
+    mpc_path   = os.path.join('Results', f'omega_mpc.png') 
 
-    # plot_lanes_and_position_car(state_array)
-    # plot_omega_s(omega_s_array_human, time_array)
-    # plot_omega_s(omega_s_array_mpc, time_array)
+
+    plot_lanes_and_position_car(state_array, save_path=lanes_and_position_path)
+    plot_omega_s_human(omega_s_array_human, time_array=time_array, save_path=human_path)
+    plot_omega_s_mpc(omega_s_array_mpc, time_array=time_array, save_path=mpc_path)
     sys.exit()
 
 if __name__ == "__main__":

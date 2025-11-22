@@ -3,6 +3,7 @@ import math
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 pygame.init()
 WIDTH, HEIGHT = 900, 600
@@ -26,11 +27,12 @@ PHI_RATE = math.radians(3)
 
 
 LANE_WIDTH = 3       
-AMPLITUDE = 4.0              
+AMPLITUDE = 8             
 FREGUENCY = 0.05
 
 
 #MPC
+CONTROLLER_ACTIVE = True
 K_S = 0.1
 K_L = 0.05
 

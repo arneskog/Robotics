@@ -46,7 +46,7 @@ def draw_sin_lanes(screen, car_x, car_y):
 def draw_camera_points(screen, car_x, car_y,
                        measured_x_lane_1, measured_y_lane_1,
                        measured_x_lane_2=None, measured_y_lane_2=None,
-                       color_left=(0, 255, 0), color_right=(255, 255, 0), radius=4):
+                       color_left=(0, 255, 0), color_right=(0, 255, 0), radius=3):
     
     # draw left-lane detections
     if measured_x_lane_1 is not None and measured_y_lane_1 is not None:
